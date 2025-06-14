@@ -24,7 +24,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
 
   const [errors, setErrors] = useState<Partial<TemplateFormData>>({});
   const [activeTab, setActiveTab] = useState<'html' | 'text' | 'preview'>('html');
-  const [previewData, setPreviewData] = useState(EmailUtils.generatePreviewData());
+  const [previewData] = useState(EmailUtils.generatePreviewData());
 
   // Populate form when editing
   useEffect(() => {

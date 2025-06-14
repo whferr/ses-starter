@@ -1,57 +1,46 @@
 import { Contact, EmailTemplate, SenderProfile, SentEmail, AppSettings } from './types';
 
-// Storage utility for local JSON files
+// Super simple file storage - no complex backend needed!
 class LocalStorage {
-  private readonly dataPath = 'data';
+  private readonly apiUrl = 'http://localhost:3001/api';
 
-  // Generate unique ID
   generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  // Generic file operations
-  private async loadData<T>(filename: string, defaultData: T): Promise<T> {
+  // Simple load: GET /api/{filename} → data/{filename}.json
+  private async load<T>(filename: string, defaultData: T): Promise<T> {
     try {
-      const response = await fetch(`/${this.dataPath}/${filename}`);
-      if (!response.ok) {
-        return defaultData;
-      }
-      return await response.json();
+      const response = await fetch(`${this.apiUrl}/${filename}`);
+      return response.ok ? await response.json() : defaultData;
     } catch (error) {
-      console.warn(`Failed to load ${filename}, using default data:`, error);
+      console.warn(`Failed to load ${filename}, using default:`, error);
       return defaultData;
     }
   }
 
-  private async saveData<T>(filename: string, data: T): Promise<void> {
+  // Simple save: POST /api/{filename} → data/{filename}.json
+  private async save<T>(filename: string, data: T): Promise<void> {
     try {
-      // In a real app, this would need a backend API to save files
-      // For now, we'll store in localStorage as a fallback
-      localStorage.setItem(filename, JSON.stringify(data));
-      console.log(`Data saved to localStorage: ${filename}`);
+      await fetch(`${this.apiUrl}/${filename}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      console.log(`✅ Saved ${filename}.json`);
     } catch (error) {
-      console.error(`Failed to save ${filename}:`, error);
+      console.error(`❌ Failed to save ${filename}:`, error);
       throw error;
-    }
-  }
-
-  private loadFromLocalStorage<T>(filename: string, defaultData: T): T {
-    try {
-      const stored = localStorage.getItem(filename);
-      return stored ? JSON.parse(stored) : defaultData;
-    } catch (error) {
-      console.warn(`Failed to load from localStorage: ${filename}`, error);
-      return defaultData;
     }
   }
 
   // Contact operations
   async loadContacts(): Promise<Contact[]> {
-    return this.loadFromLocalStorage('contacts.json', []);
+    return this.load('contacts', []);
   }
 
   async saveContacts(contacts: Contact[]): Promise<void> {
-    await this.saveData('contacts.json', contacts);
+    await this.save('contacts', contacts);
   }
 
   async createContact(contactData: Omit<Contact, 'id' | 'createdAt'>): Promise<Contact> {
@@ -92,11 +81,11 @@ class LocalStorage {
 
   // Template operations
   async loadTemplates(): Promise<EmailTemplate[]> {
-    return this.loadFromLocalStorage('templates.json', []);
+    return this.load('templates', []);
   }
 
   async saveTemplates(templates: EmailTemplate[]): Promise<void> {
-    await this.saveData('templates.json', templates);
+    await this.save('templates', templates);
   }
 
   async createTemplate(templateData: Omit<EmailTemplate, 'id' | 'createdAt' | 'updatedAt' | 'variables'>): Promise<EmailTemplate> {
@@ -154,11 +143,11 @@ class LocalStorage {
 
   // Sender Profile operations
   async loadSenderProfiles(): Promise<SenderProfile[]> {
-    return this.loadFromLocalStorage('sender-profiles.json', []);
+    return this.load('sender-profiles', []);
   }
 
   async saveSenderProfiles(profiles: SenderProfile[]): Promise<void> {
-    await this.saveData('sender-profiles.json', profiles);
+    await this.save('sender-profiles', profiles);
   }
 
   async createSenderProfile(profileData: Omit<SenderProfile, 'id'>): Promise<SenderProfile> {
@@ -209,11 +198,11 @@ class LocalStorage {
 
   // Sent Email operations
   async loadSentEmails(): Promise<SentEmail[]> {
-    return this.loadFromLocalStorage('sent-emails.json', []);
+    return this.load('sent-emails', []);
   }
 
   async saveSentEmails(emails: SentEmail[]): Promise<void> {
-    await this.saveData('sent-emails.json', emails);
+    await this.save('sent-emails', emails);
   }
 
   async recordSentEmail(emailData: Omit<SentEmail, 'id' | 'sentAt'>): Promise<SentEmail> {
@@ -232,11 +221,11 @@ class LocalStorage {
 
   // Settings operations
   async loadSettings(): Promise<AppSettings | null> {
-    return this.loadFromLocalStorage('settings.json', null);
+    return this.load('settings', null);
   }
 
   async saveSettings(settings: AppSettings): Promise<void> {
-    await this.saveData('settings.json', settings);
+    await this.save('settings', settings);
   }
 
   // Utility functions
