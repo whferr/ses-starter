@@ -2,10 +2,10 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+  { name: 'Dashboard', href: '/', icon: '📊' },
   { name: 'Contacts', href: '/contacts', icon: '👥' },
-  { name: 'Templates', href: '/templates', icon: '📝' },
-  { name: 'Campaigns', href: '/campaigns', icon: '🚀' },
+  { name: 'Templates', href: '/templates', icon: '📄' },
+  { name: 'Send', href: '/send', icon: '🚀' },
   { name: 'History', href: '/history', icon: '📈' },
   { name: 'Settings', href: '/settings', icon: '⚙️' },
 ];

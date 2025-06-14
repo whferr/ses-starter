@@ -7,6 +7,7 @@ interface ContactListProps {
   onEdit: (contact: Contact) => void;
   onDelete: (contactId: string) => void;
   onBulkDelete: (contactIds: string[]) => void;
+  onViewHistory?: (contact: Contact) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
@@ -17,6 +18,7 @@ export const ContactList: React.FC<ContactListProps> = ({
   onEdit,
   onDelete,
   onBulkDelete,
+  onViewHistory,
   searchQuery,
   onSearchChange
 }) => {
@@ -274,6 +276,15 @@ export const ContactList: React.FC<ContactListProps> = ({
                     </td>
                     <td className="table-cell">
                       <div className="flex space-x-2">
+                        {onViewHistory && (
+                          <button
+                            onClick={() => onViewHistory(contact)}
+                            className="text-blue-600 hover:text-blue-800 text-sm"
+                            title="View email history"
+                          >
+                            History
+                          </button>
+                        )}
                         <button
                           onClick={() => onEdit(contact)}
                           className="text-primary hover:text-primary/80 text-sm"

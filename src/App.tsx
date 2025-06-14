@@ -4,7 +4,7 @@ import { Layout } from './components/layout/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Contacts } from './pages/Contacts';
 import { Templates } from './pages/Templates';
-import { Campaigns } from './pages/Campaigns';
+import { Send } from './pages/Send';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 
@@ -18,7 +18,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/templates" element={<Templates />} />
-            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/send" element={<Send />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>

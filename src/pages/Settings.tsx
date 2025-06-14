@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSettings } from '../hooks/useSettings';
+import { useSender } from '../hooks/useSender';
 import { AWSSettings, SenderProfile } from '../lib/types';
 
 export const Settings: React.FC = () => {
@@ -11,6 +12,16 @@ export const Settings: React.FC = () => {
     testAWSConnection,
     getSendQuota,
   } = useSettings();
+
+  const {
+    senderProfiles,
+    loading: senderLoading,
+    error: senderError,
+    createSenderProfile,
+    updateSenderProfile,
+    deleteSenderProfile,
+    setDefaultProfile,
+  } = useSender();
 
   const [activeTab, setActiveTab] = useState<'aws' | 'sender'>('aws');
   const [awsForm, setAwsForm] = useState<AWSSettings>({
@@ -26,6 +37,7 @@ export const Settings: React.FC = () => {
     email: '',
     signature: '',
   });
+  const [editingSender, setEditingSender] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [quota, setQuota] = useState<{ sent24h: number; max24h: number; sendingRate: number } | null>(null);
 
@@ -84,15 +96,72 @@ export const Settings: React.FC = () => {
     }
   };
 
+  const handleSenderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingSender) {
+        await updateSenderProfile(editingSender, senderForm);
+      } else {
+        await createSenderProfile({
+          ...senderForm,
+          isDefault: senderProfiles.length === 0
+        });
+      }
+      setSenderForm({ name: '', email: '', signature: '' });
+      setEditingSender(null);
+      alert('Sender profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving sender profile:', error);
+    }
+  };
+
+  const handleEditSender = (profile: SenderProfile) => {
+    setSenderForm({
+      name: profile.name,
+      email: profile.email,
+      signature: profile.signature,
+    });
+    setEditingSender(profile.id);
+  };
+
+  const handleDeleteSender = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this sender profile?')) {
+      try {
+        await deleteSenderProfile(id);
+        alert('Sender profile deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting sender profile:', error);
+      }
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    try {
+      await setDefaultProfile(id);
+      alert('Default sender profile updated!');
+    } catch (error) {
+      console.error('Error setting default profile:', error);
+    }
+  };
+
   const awsRegions = [
     { value: 'us-east-1', label: 'US East (N. Virginia)' },
-    { value: 'us-west-2', label: 'US West (Oregon)' },
+    { value: 'us-east-2', label: 'US East (Ohio)' },
     { value: 'us-west-1', label: 'US West (N. California)' },
-    { value: 'eu-west-1', label: 'Europe (Ireland)' },
-    { value: 'eu-central-1', label: 'Europe (Frankfurt)' },
+    { value: 'us-west-2', label: 'US West (Oregon)' },
+    { value: 'ap-south-1', label: 'Asia Pacific (Mumbai)' },
+    { value: 'ap-northeast-3', label: 'Asia Pacific (Osaka)' },
+    { value: 'ap-northeast-2', label: 'Asia Pacific (Seoul)' },
     { value: 'ap-southeast-1', label: 'Asia Pacific (Singapore)' },
     { value: 'ap-southeast-2', label: 'Asia Pacific (Sydney)' },
     { value: 'ap-northeast-1', label: 'Asia Pacific (Tokyo)' },
+    { value: 'ca-central-1', label: 'Canada (Central)' },
+    { value: 'eu-central-1', label: 'Europe (Frankfurt)' },
+    { value: 'eu-west-1', label: 'Europe (Ireland)' },
+    { value: 'eu-west-2', label: 'Europe (London)' },
+    { value: 'eu-west-3', label: 'Europe (Paris)' },
+    { value: 'eu-north-1', label: 'Europe (Stockholm)' },
+    { value: 'sa-east-1', label: 'South America (São Paulo)' },
   ];
 
   return (
@@ -341,12 +410,177 @@ export const Settings: React.FC = () => {
 
           {activeTab === 'sender' && (
             <div className="space-y-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">Coming Soon</h3>
-                <p className="text-gray-600">
-                  Sender profile management will be available in Phase 3. 
-                  For now, configure your default sender in the AWS SES Configuration tab.
-                </p>
+              {/* Error Display for Sender */}
+              {senderError && (
+                <div className="alert alert-error">
+                  <div className="flex">
+                    <span className="text-2xl mr-3">❌</span>
+                    <div>
+                      <h3 className="font-medium">Error</h3>
+                      <p className="mt-1">{senderError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Add/Edit Sender Profile Form */}
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {editingSender ? 'Edit Sender Profile' : 'Add New Sender Profile'}
+                  </h3>
+                </div>
+                <form onSubmit={handleSenderSubmit} className="card-body space-y-4">
+                  <div className="form-group">
+                    <label htmlFor="senderName" className="form-label">
+                      Sender Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="senderName"
+                      className="form-input"
+                      value={senderForm.name}
+                      onChange={(e) => setSenderForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="John Doe"
+                      disabled={senderLoading}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="senderEmail" className="form-label">
+                      Sender Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="senderEmail"
+                      className="form-input"
+                      value={senderForm.email}
+                      onChange={(e) => setSenderForm(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="john@example.com"
+                      disabled={senderLoading}
+                      required
+                    />
+                    <p className="form-help">Must be verified in AWS SES</p>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="senderSignature" className="form-label">
+                      Email Signature
+                    </label>
+                    <textarea
+                      id="senderSignature"
+                      rows={4}
+                      className="form-textarea"
+                      value={senderForm.signature}
+                      onChange={(e) => setSenderForm(prev => ({ ...prev, signature: e.target.value }))}
+                      placeholder="Best regards,&#10;John Doe&#10;Company Name&#10;+1 (555) 123-4567"
+                      disabled={senderLoading}
+                    />
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={senderLoading || !senderForm.name || !senderForm.email}
+                    >
+                      {senderLoading ? (
+                        <div className="flex items-center">
+                          <div className="spinner mr-2"></div>
+                          Saving...
+                        </div>
+                      ) : (
+                        editingSender ? 'Update Profile' : 'Add Profile'
+                      )}
+                    </button>
+                    
+                    {editingSender && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSenderForm({ name: '', email: '', signature: '' });
+                          setEditingSender(null);
+                        }}
+                        className="btn btn-outline"
+                        disabled={senderLoading}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+
+              {/* Existing Sender Profiles */}
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="text-lg font-medium text-gray-900">Sender Profiles</h3>
+                </div>
+                <div className="card-body">
+                  {senderProfiles.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      No sender profiles yet. Add one above to get started.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {senderProfiles.map((profile) => (
+                        <div
+                          key={profile.id}
+                          className={`p-4 border rounded-lg ${
+                            profile.isDefault ? 'border-primary bg-primary/5' : 'border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <h4 className="font-medium text-gray-900">{profile.name}</h4>
+                                {profile.isDefault && (
+                                  <span className="px-2 py-1 text-xs font-medium bg-primary text-white rounded">
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">{profile.email}</p>
+                              {profile.signature && (
+                                <div className="mt-2 text-sm text-gray-500">
+                                  <strong>Signature:</strong>
+                                  <pre className="mt-1 whitespace-pre-wrap">{profile.signature}</pre>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center space-x-2 ml-4">
+                              {!profile.isDefault && (
+                                <button
+                                  onClick={() => handleSetDefault(profile.id)}
+                                  className="btn btn-outline btn-sm"
+                                  disabled={senderLoading}
+                                >
+                                  Set Default
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleEditSender(profile)}
+                                className="btn btn-outline btn-sm"
+                                disabled={senderLoading}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSender(profile.id)}
+                                className="btn btn-outline btn-sm text-red-600 hover:bg-red-50"
+                                disabled={senderLoading}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}

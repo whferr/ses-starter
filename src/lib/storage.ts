@@ -44,13 +44,23 @@ class LocalStorage {
   }
 
   async createContact(contactData: Omit<Contact, 'id' | 'createdAt'>): Promise<Contact> {
+    const contacts = await this.loadContacts();
+    
+    // Check for duplicate email
+    const existingContact = contacts.find(contact => 
+      contact.email.toLowerCase() === contactData.email.toLowerCase()
+    );
+    
+    if (existingContact) {
+      throw new Error(`Contact with email ${contactData.email} already exists`);
+    }
+
     const contact: Contact = {
       ...contactData,
       id: this.generateId(),
       createdAt: new Date().toISOString(),
     };
 
-    const contacts = await this.loadContacts();
     contacts.push(contact);
     await this.saveContacts(contacts);
     
