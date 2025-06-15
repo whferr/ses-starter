@@ -8,6 +8,7 @@ import { EmailUtils } from '../lib/email-utils';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Modal } from '../components/ui/modal';
+import { CSVImportModal } from '../components/contacts/CSVImportModal';
 import { 
   Plus, 
   Search, 
@@ -17,7 +18,8 @@ import {
   Calendar,
   ChevronDown,
   ChevronRight,
-  Filter
+  Filter,
+  Upload
 } from 'lucide-react';
 
 export const Contacts: React.FC = () => {
@@ -29,6 +31,7 @@ export const Contacts: React.FC = () => {
     updateContact,
     deleteContact,
     deleteMultipleContacts,
+    importContacts,
   } = useContacts();
 
   const { getEmailsForContact } = useHistory();
@@ -36,6 +39,7 @@ export const Contacts: React.FC = () => {
   const { senderProfiles } = useSender();
 
   const [showForm, setShowForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | undefined>();
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,6 +175,17 @@ export const Contacts: React.FC = () => {
       }
     }
   };
+  
+  const handleImportContacts = async (contactsToImport: ContactFormData[]) => {
+    try {
+      await importContacts(contactsToImport);
+      // Clear any selections after import
+      setSelectedContacts(new Set());
+    } catch (error) {
+      console.error('Error importing contacts:', error);
+      throw error;
+    }
+  };
 
   const toggleContactSelection = (contactId: string) => {
     const newSelected = new Set(selectedContacts);
@@ -252,14 +267,25 @@ export const Contacts: React.FC = () => {
             Manage your contacts and audience segments
           </p>
         </div>
-        <Button
-          onClick={handleAddNew}
-          disabled={loading}
-          className="bg-black text-white hover:bg-gray-800"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add contact
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setShowImportModal(true)}
+            disabled={loading}
+            variant="outline"
+            className="flex items-center gap-1"
+          >
+            <Upload className="w-4 h-4" />
+            Import CSV
+          </Button>
+          <Button
+            onClick={handleAddNew}
+            disabled={loading}
+            className="bg-black text-white hover:bg-gray-800"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add contact
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -523,6 +549,8 @@ export const Contacts: React.FC = () => {
           </div>
         }
       >
+      
+      
         <div className="p-6 space-y-4">
           {/* Name Field */}
           <div>
@@ -634,6 +662,13 @@ export const Contacts: React.FC = () => {
           </div>
         </div>
       </Modal>
+      
+      {/* CSV Import Modal */}
+      <CSVImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImport={handleImportContacts}
+      />
     </div>
   );
 }; 

@@ -128,10 +128,7 @@ export const useContacts = () => {
     try {
       setLoading(true);
       setError(null);
-      const promises = newContacts.map(contactData => 
-        storage.createContact(contactData)
-      );
-      const createdContacts = await Promise.all(promises);
+      const createdContacts = await storage.createMultipleContacts(newContacts);
       setContacts(prev => [...prev, ...createdContacts]);
       return createdContacts;
     } catch (err) {

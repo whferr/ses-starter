@@ -89,6 +89,52 @@ class LocalStorage {
     return true;
   }
 
+  async createMultipleContacts(contactsData: Omit<Contact, 'id' | 'createdAt'>[]): Promise<Contact[]> {
+    const existingContacts = await this.loadContacts();
+    const newContacts: Contact[] = [];
+    const skippedEmails: string[] = [];
+    
+    for (const contactData of contactsData) {
+      // Check for duplicate email
+      const existingContact = existingContacts.find(contact => 
+        contact.email.toLowerCase() === contactData.email.toLowerCase()
+      );
+      
+      if (existingContact) {
+        skippedEmails.push(contactData.email);
+        continue;
+      }
+      
+      // Also check against contacts we're about to create
+      const duplicateInBatch = newContacts.find(contact => 
+        contact.email.toLowerCase() === contactData.email.toLowerCase()
+      );
+      
+      if (duplicateInBatch) {
+        skippedEmails.push(contactData.email);
+        continue;
+      }
+
+      const contact: Contact = {
+        ...contactData,
+        id: this.generateId(),
+        createdAt: new Date().toISOString(),
+      };
+
+      newContacts.push(contact);
+    }
+
+    // Save all new contacts at once
+    const allContacts = [...existingContacts, ...newContacts];
+    await this.saveContacts(allContacts);
+    
+    if (skippedEmails.length > 0) {
+      console.warn(`Skipped ${skippedEmails.length} duplicate emails:`, skippedEmails);
+    }
+    
+    return newContacts;
+  }
+
   // Template operations
   async loadTemplates(): Promise<EmailTemplate[]> {
     return this.load('templates', []);
