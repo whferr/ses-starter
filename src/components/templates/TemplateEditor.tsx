@@ -38,6 +38,8 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
     }
   }, [template]);
 
+
+
   const validateForm = (): boolean => {
     const validation = EmailUtils.validateTemplate(formData);
     setErrors(validation.errors.reduce((acc, error) => {
@@ -119,14 +121,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="card">
-        <div className="card-header">
-          <h3 className="text-lg font-medium text-gray-900">
-            {template ? 'Edit Template' : 'Create New Template'}
-          </h3>
-        </div>
-
-        <form onSubmit={handleSubmit} className="card-body space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-template-form>
           {/* Template Name */}
           <div className="form-group">
             <label htmlFor="name" className="form-label">
@@ -292,33 +287,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             </div>
           </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="btn btn-outline"
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="spinner mr-2"></div>
-                  Saving...
-                </div>
-              ) : (
-                template ? 'Update Template' : 'Create Template'
-              )}
-            </button>
-          </div>
         </form>
       </div>
-    </div>
-  );
-}; 
+    );
+  }; 

@@ -7,11 +7,12 @@ import { Templates } from './pages/Templates';
 import { Send } from './pages/Send';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
+import { UIKit } from './pages/UIKit';
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Layout>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -21,6 +22,7 @@ function App() {
             <Route path="/send" element={<Send />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/ui-kit" element={<UIKit />} />
           </Routes>
         </Layout>
       </div>

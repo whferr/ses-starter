@@ -2,6 +2,19 @@ import React, { useState } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { useSender } from '../hooks/useSender';
 import { AWSSettings, SenderProfile } from '../lib/types';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { 
+  Settings as SettingsIcon,
+  User,
+  Shield,
+  CheckCircle,
+  XCircle,
+  Plus,
+  Edit,
+  Trash2,
+  Star
+} from 'lucide-react';
 
 export const Settings: React.FC = () => {
   const {
@@ -167,67 +180,66 @@ export const Settings: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Configure your AWS SES and application settings.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Configure your AWS SES and application settings
+          </p>
+        </div>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="alert alert-error">
-          <div className="flex">
-            <span className="text-2xl mr-3">❌</span>
-            <div>
-              <h3 className="font-medium">Error</h3>
-              <p className="mt-1">{error}</p>
-            </div>
-          </div>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="text-red-900 font-medium">Error</div>
+          <div className="text-red-800 text-sm mt-1">{error}</div>
         </div>
       )}
 
       {/* Settings Tabs */}
-      <div className="card">
+      <div className="bg-white rounded-lg border border-gray-200">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 px-6">
             <button
               onClick={() => setActiveTab('aws')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
                 activeTab === 'aws'
-                  ? 'border-primary text-primary'
+                  ? 'border-black text-black'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
+              <Shield className="w-4 h-4" />
               AWS SES Configuration
             </button>
             <button
               onClick={() => setActiveTab('sender')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
                 activeTab === 'sender'
-                  ? 'border-primary text-primary'
+                  ? 'border-black text-black'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
+              <User className="w-4 h-4" />
               Sender Profiles
             </button>
           </nav>
         </div>
 
-        <div className="card-body">
+        <div className="p-6">
           {activeTab === 'aws' && (
             <div className="space-y-6">
               {/* AWS Configuration Form */}
-              <form onSubmit={handleAWSSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleAWSSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Region */}
-                  <div className="form-group">
-                    <label htmlFor="region" className="form-label">
+                  <div>
+                    <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-2">
                       AWS Region *
                     </label>
                     <select
                       id="region"
-                      className="form-select"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={awsForm.region}
                       onChange={(e) => setAwsForm(prev => ({ ...prev, region: e.target.value }))}
                       disabled={loading}
@@ -241,8 +253,8 @@ export const Settings: React.FC = () => {
                   </div>
 
                   {/* Rate Limit */}
-                  <div className="form-group">
-                    <label htmlFor="rateLimitPerSecond" className="form-label">
+                  <div>
+                    <label htmlFor="rateLimitPerSecond" className="block text-sm font-medium text-gray-700 mb-2">
                       Rate Limit (emails/second) *
                     </label>
                     <input
@@ -250,25 +262,25 @@ export const Settings: React.FC = () => {
                       id="rateLimitPerSecond"
                       min="1"
                       max="50"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={rateLimitForm}
                       onChange={(e) => setRateLimitForm(parseInt(e.target.value))}
                       disabled={loading}
                     />
-                    <p className="form-help">AWS SES sandbox allows 1/sec, production varies by region</p>
+                    <p className="text-sm text-gray-500 mt-1">AWS SES sandbox allows 1/sec, production varies by region</p>
                   </div>
                 </div>
 
                 {/* AWS Credentials */}
                 <div className="space-y-4">
-                  <div className="form-group">
-                    <label htmlFor="accessKeyId" className="form-label">
+                  <div>
+                    <label htmlFor="accessKeyId" className="block text-sm font-medium text-gray-700 mb-2">
                       AWS Access Key ID *
                     </label>
                     <input
                       type="text"
                       id="accessKeyId"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={awsForm.accessKeyId}
                       onChange={(e) => setAwsForm(prev => ({ ...prev, accessKeyId: e.target.value }))}
                       placeholder="AKIA..."
@@ -276,14 +288,14 @@ export const Settings: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="secretAccessKey" className="form-label">
+                  <div>
+                    <label htmlFor="secretAccessKey" className="block text-sm font-medium text-gray-700 mb-2">
                       AWS Secret Access Key *
                     </label>
                     <input
                       type="password"
                       id="secretAccessKey"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={awsForm.secretAccessKey}
                       onChange={(e) => setAwsForm(prev => ({ ...prev, secretAccessKey: e.target.value }))}
                       placeholder="Enter secret access key"
@@ -292,33 +304,33 @@ export const Settings: React.FC = () => {
                   </div>
                 </div>
 
-                                 {/* Default Sender Information */}
-                 <div className="space-y-4">
-                   <h3 className="text-lg font-medium text-gray-900">Default Sender</h3>
-                   <div className="form-group">
-                     <label htmlFor="fromEmail" className="form-label">
-                       From Email *
-                     </label>
-                     <input
-                       type="email"
-                       id="fromEmail"
-                       className="form-input"
-                       value={awsForm.fromEmail}
-                       onChange={(e) => setAwsForm(prev => ({ ...prev, fromEmail: e.target.value }))}
-                       placeholder="your-email@example.com"
-                       disabled={loading}
-                     />
-                     <p className="form-help">Must be verified in AWS SES</p>
-                   </div>
+                {/* Default Sender Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Default Sender</h3>
+                  <div>
+                    <label htmlFor="fromEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                      From Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="fromEmail"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      value={awsForm.fromEmail}
+                      onChange={(e) => setAwsForm(prev => ({ ...prev, fromEmail: e.target.value }))}
+                      placeholder="your-email@example.com"
+                      disabled={loading}
+                    />
+                    <p className="text-sm text-gray-500 mt-1">Must be verified in AWS SES</p>
+                  </div>
 
-                  <div className="form-group">
-                    <label htmlFor="replyToEmail" className="form-label">
+                  <div>
+                    <label htmlFor="replyToEmail" className="block text-sm font-medium text-gray-700 mb-2">
                       Reply-To Email
                     </label>
                     <input
                       type="email"
                       id="replyToEmail"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={awsForm.replyToEmail}
                       onChange={(e) => setAwsForm(prev => ({ ...prev, replyToEmail: e.target.value }))}
                       placeholder="reply@example.com (optional)"
@@ -328,54 +340,59 @@ export const Settings: React.FC = () => {
                 </div>
 
                 {/* Form Actions */}
-                <div className="flex space-x-3">
-                  <button
+                <div className="flex flex-wrap gap-3">
+                  <Button
                     type="submit"
-                    className="btn btn-primary"
                     disabled={loading}
+                    className="bg-black text-white hover:bg-gray-800"
                   >
-                    {loading ? (
-                      <div className="flex items-center">
-                        <div className="spinner mr-2"></div>
-                        Saving...
-                      </div>
-                    ) : (
-                      'Save AWS Settings'
-                    )}
-                  </button>
+                    {loading ? 'Saving...' : 'Save AWS Settings'}
+                  </Button>
                   
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={handleTestConnection}
-                    className="btn btn-outline"
                     disabled={loading || !awsForm.accessKeyId || !awsForm.secretAccessKey}
                   >
                     Test Connection
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={handleGetQuota}
-                    className="btn btn-outline"
                     disabled={loading || !awsForm.accessKeyId || !awsForm.secretAccessKey}
                   >
                     Check Quota
-                  </button>
+                  </Button>
                 </div>
               </form>
 
               {/* Test Results */}
               {testResult && (
-                <div className={`alert ${testResult.success ? 'alert-success' : 'alert-error'}`}>
-                  <div className="flex">
-                    <span className="text-2xl mr-3">
-                      {testResult.success ? '✅' : '❌'}
-                    </span>
+                <div className={`rounded-lg p-4 ${
+                  testResult.success 
+                    ? 'bg-green-50 border border-green-200' 
+                    : 'bg-red-50 border border-red-200'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    {testResult.success ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
                     <div>
-                      <h3 className="font-medium">
+                      <div className={`font-medium ${
+                        testResult.success ? 'text-green-900' : 'text-red-900'
+                      }`}>
                         {testResult.success ? 'Connection Successful' : 'Connection Failed'}
-                      </h3>
-                      <p className="mt-1">{testResult.message}</p>
+                      </div>
+                      <div className={`text-sm mt-1 ${
+                        testResult.success ? 'text-green-800' : 'text-red-800'
+                      }`}>
+                        {testResult.message}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -383,24 +400,20 @@ export const Settings: React.FC = () => {
 
               {/* Quota Information */}
               {quota && (
-                <div className="card bg-blue-50 border-blue-200">
-                  <div className="card-header">
-                    <h3 className="text-lg font-medium text-blue-900">AWS SES Sending Quota</h3>
-                  </div>
-                  <div className="card-body">
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">{quota.sent24h}</div>
-                        <div className="text-sm text-blue-800">Sent (24h)</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">{quota.max24h}</div>
-                        <div className="text-sm text-blue-800">Limit (24h)</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">{quota.sendingRate}/sec</div>
-                        <div className="text-sm text-blue-800">Max Rate</div>
-                      </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-blue-900 mb-4">AWS SES Sending Quota</h3>
+                  <div className="grid grid-cols-3 gap-6 text-center">
+                    <div>
+                      <div className="text-2xl font-semibold text-blue-600">{quota.sent24h}</div>
+                      <div className="text-sm text-blue-800">Sent (24h)</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-semibold text-blue-600">{quota.max24h}</div>
+                      <div className="text-sm text-blue-800">Limit (24h)</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-semibold text-blue-600">{quota.sendingRate}/sec</div>
+                      <div className="text-sm text-blue-800">Max Rate</div>
                     </div>
                   </div>
                 </div>
@@ -412,33 +425,26 @@ export const Settings: React.FC = () => {
             <div className="space-y-6">
               {/* Error Display for Sender */}
               {senderError && (
-                <div className="alert alert-error">
-                  <div className="flex">
-                    <span className="text-2xl mr-3">❌</span>
-                    <div>
-                      <h3 className="font-medium">Error</h3>
-                      <p className="mt-1">{senderError}</p>
-                    </div>
-                  </div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="text-red-900 font-medium">Error</div>
+                  <div className="text-red-800 text-sm mt-1">{senderError}</div>
                 </div>
               )}
 
               {/* Add/Edit Sender Profile Form */}
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {editingSender ? 'Edit Sender Profile' : 'Add New Sender Profile'}
-                  </h3>
-                </div>
-                <form onSubmit={handleSenderSubmit} className="card-body space-y-4">
-                  <div className="form-group">
-                    <label htmlFor="senderName" className="form-label">
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  {editingSender ? 'Edit Sender Profile' : 'Add New Sender Profile'}
+                </h3>
+                <form onSubmit={handleSenderSubmit} className="space-y-4">
+                  <div>
+                    <label htmlFor="senderName" className="block text-sm font-medium text-gray-700 mb-2">
                       Sender Name *
                     </label>
                     <input
                       type="text"
                       id="senderName"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={senderForm.name}
                       onChange={(e) => setSenderForm(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="John Doe"
@@ -447,31 +453,31 @@ export const Settings: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="senderEmail" className="form-label">
+                  <div>
+                    <label htmlFor="senderEmail" className="block text-sm font-medium text-gray-700 mb-2">
                       Sender Email *
                     </label>
                     <input
                       type="email"
                       id="senderEmail"
-                      className="form-input"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={senderForm.email}
                       onChange={(e) => setSenderForm(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="john@example.com"
                       disabled={senderLoading}
                       required
                     />
-                    <p className="form-help">Must be verified in AWS SES</p>
+                    <p className="text-sm text-gray-500 mt-1">Must be verified in AWS SES</p>
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="senderSignature" className="form-label">
+                  <div>
+                    <label htmlFor="senderSignature" className="block text-sm font-medium text-gray-700 mb-2">
                       Email Signature
                     </label>
                     <textarea
                       id="senderSignature"
                       rows={4}
-                      className="form-textarea"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       value={senderForm.signature}
                       onChange={(e) => setSenderForm(prev => ({ ...prev, signature: e.target.value }))}
                       placeholder="Best regards,&#10;John Doe&#10;Company Name&#10;+1 (555) 123-4567"
@@ -479,108 +485,119 @@ export const Settings: React.FC = () => {
                     />
                   </div>
 
-                  <div className="flex space-x-3">
-                    <button
+                  <div className="flex gap-3">
+                    <Button
                       type="submit"
-                      className="btn btn-primary"
                       disabled={senderLoading || !senderForm.name || !senderForm.email}
+                      className="bg-black text-white hover:bg-gray-800"
                     >
-                      {senderLoading ? (
-                        <div className="flex items-center">
-                          <div className="spinner mr-2"></div>
-                          Saving...
-                        </div>
-                      ) : (
-                        editingSender ? 'Update Profile' : 'Add Profile'
-                      )}
-                    </button>
+                      {senderLoading ? 'Saving...' : (editingSender ? 'Update Profile' : 'Add Profile')}
+                    </Button>
                     
                     {editingSender && (
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
                         onClick={() => {
                           setSenderForm({ name: '', email: '', signature: '' });
                           setEditingSender(null);
                         }}
-                        className="btn btn-outline"
                         disabled={senderLoading}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </form>
               </div>
 
               {/* Existing Sender Profiles */}
-              <div className="card">
-                <div className="card-header">
+              <div>
+                <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-medium text-gray-900">Sender Profiles</h3>
+                  <div className="text-sm text-gray-600">
+                    {senderProfiles.length} profile{senderProfiles.length !== 1 ? 's' : ''}
+                  </div>
                 </div>
-                <div className="card-body">
-                  {senderProfiles.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                      No sender profiles yet. Add one above to get started.
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {senderProfiles.map((profile) => (
-                        <div
-                          key={profile.id}
-                          className={`p-4 border rounded-lg ${
-                            profile.isDefault ? 'border-primary bg-primary/5' : 'border-gray-200'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2">
-                                <h4 className="font-medium text-gray-900">{profile.name}</h4>
-                                {profile.isDefault && (
-                                  <span className="px-2 py-1 text-xs font-medium bg-primary text-white rounded">
-                                    Default
-                                  </span>
-                                )}
+                
+                {senderProfiles.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-4xl mb-4">👤</div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No sender profiles yet</h3>
+                    <p className="text-gray-600">
+                      Add a sender profile above to get started
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {senderProfiles.map((profile) => (
+                      <div
+                        key={profile.id}
+                        className={`p-4 rounded-lg border ${
+                          profile.isDefault 
+                            ? 'border-black bg-gray-50' 
+                            : 'border-gray-200 bg-white hover:bg-gray-50'
+                        } transition-colors`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-medium text-gray-900">{profile.name}</h4>
+                              {profile.isDefault && (
+                                <Badge className="bg-black text-white">
+                                  <Star className="w-3 h-3 mr-1" />
+                                  Default
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{profile.email}</p>
+                            {profile.signature && (
+                              <div className="text-sm text-gray-500">
+                                <div className="font-medium mb-1">Signature:</div>
+                                <pre className="whitespace-pre-wrap text-xs bg-gray-100 p-2 rounded">
+                                  {profile.signature}
+                                </pre>
                               </div>
-                              <p className="text-sm text-gray-600 mt-1">{profile.email}</p>
-                              {profile.signature && (
-                                <div className="mt-2 text-sm text-gray-500">
-                                  <strong>Signature:</strong>
-                                  <pre className="mt-1 whitespace-pre-wrap">{profile.signature}</pre>
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="flex items-center space-x-2 ml-4">
-                              {!profile.isDefault && (
-                                <button
-                                  onClick={() => handleSetDefault(profile.id)}
-                                  className="btn btn-outline btn-sm"
-                                  disabled={senderLoading}
-                                >
-                                  Set Default
-                                </button>
-                              )}
-                              <button
-                                onClick={() => handleEditSender(profile)}
-                                className="btn btn-outline btn-sm"
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center gap-2 ml-4">
+                            {!profile.isDefault && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSetDefault(profile.id)}
                                 disabled={senderLoading}
                               >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteSender(profile.id)}
-                                className="btn btn-outline btn-sm text-red-600 hover:bg-red-50"
-                                disabled={senderLoading}
-                              >
-                                Delete
-                              </button>
-                            </div>
+                                <Star className="w-4 h-4 mr-1" />
+                                Set Default
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditSender(profile)}
+                              disabled={senderLoading}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteSender(profile.id)}
+                              disabled={senderLoading}
+                              className="text-red-600 hover:bg-red-50 hover:border-red-200"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete
+                            </Button>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

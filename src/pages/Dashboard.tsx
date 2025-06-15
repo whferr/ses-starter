@@ -3,6 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useContacts } from '../hooks/useContacts';
 import { useTemplates } from '../hooks/useTemplates';
 import { useSettings } from '../hooks/useSettings';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { 
+  Users, 
+  FileText, 
+  Rocket, 
+  Settings as SettingsIcon,
+  ArrowRight,
+  Plus,
+  BarChart3,
+  CheckCircle,
+  AlertTriangle
+} from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -10,124 +23,173 @@ export const Dashboard: React.FC = () => {
   const { templates } = useTemplates();
   const { isAWSConfigured } = useSettings();
 
-  const stats = [
+  const quickActions = [
     {
-      name: 'Total Contacts',
-      value: contacts.length,
-      icon: '👥',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      title: 'Manage Audience',
+      description: 'Add and organize your contacts',
+      icon: Users,
+      action: () => navigate('/contacts'),
+      color: 'text-blue-600'
     },
     {
-      name: 'Email Templates',
-      value: templates.length,
-      icon: '📝',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      title: 'Create Template',
+      description: 'Design email templates',
+      icon: FileText,
+      action: () => navigate('/templates'),
+      color: 'text-green-600'
     },
     {
-      name: 'AWS Status',
-      value: isAWSConfigured() ? 'Connected' : 'Not Connected',
-      icon: '☁️',
-      color: isAWSConfigured() ? 'text-green-600' : 'text-red-600',
-      bgColor: isAWSConfigured() ? 'bg-green-50' : 'bg-red-50',
-    },
+      title: 'Launch Campaign',
+      description: 'Send emails to your audience',
+      icon: Rocket,
+      action: () => navigate('/send'),
+      color: 'text-purple-600'
+    }
   ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Welcome to AWS SES Mailer. Get started by managing your contacts and templates.
-        </p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Good morning 👋
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Here's what's happening with your email campaigns
+          </p>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {stats.map((stat) => (
-          <div key={stat.name} className="card">
-            <div className="card-body">
-              <div className="flex items-center">
-                <div className={`flex-shrink-0 ${stat.bgColor} rounded-lg p-3`}>
-                  <span className="text-2xl">{stat.icon}</span>
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      {stat.name}
-                    </dt>
-                    <dd className={`text-lg font-medium ${stat.color}`}>
-                      {stat.value}
-                    </dd>
-                  </dl>
-                </div>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Users className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-semibold text-gray-900">{contacts.length}</div>
+              <div className="text-sm text-gray-600">Total contacts</div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="card">
-        <div className="card-header">
-          <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
         </div>
-        <div className="card-body">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <button 
-              onClick={() => navigate('/contacts')}
-              className="btn btn-outline flex flex-col items-center p-6 space-y-2"
-            >
-              <span className="text-2xl">👥</span>
-              <span>Add Contacts</span>
-            </button>
-            <button 
-              onClick={() => navigate('/templates')}
-              className="btn btn-outline flex flex-col items-center p-6 space-y-2"
-            >
-              <span className="text-2xl">📝</span>
-              <span>Create Template</span>
-            </button>
-            <button 
-              onClick={() => navigate('/campaigns')}
-              className="btn btn-outline flex flex-col items-center p-6 space-y-2"
-            >
-              <span className="text-2xl">🚀</span>
-              <span>Start Campaign</span>
-            </button>
-            <button 
-              onClick={() => navigate('/settings')}
-              className="btn btn-outline flex flex-col items-center p-6 space-y-2"
-            >
-              <span className="text-2xl">⚙️</span>
-              <span>Settings</span>
-            </button>
+        
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-50 rounded-lg">
+              <FileText className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-semibold text-gray-900">{templates.length}</div>
+              <div className="text-sm text-gray-600">Email templates</div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${
+              isAWSConfigured() ? 'bg-green-50' : 'bg-red-50'
+            }`}>
+              {isAWSConfigured() ? (
+                <CheckCircle className="w-5 h-5 text-green-600" />
+              ) : (
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              )}
+            </div>
+            <div>
+              <Badge 
+                className={`${
+                  isAWSConfigured() 
+                    ? 'bg-green-100 text-green-800 border-green-200' 
+                    : 'bg-red-100 text-red-800 border-red-200'
+                }`}
+              >
+                {isAWSConfigured() ? "Connected" : "Setup Required"}
+              </Badge>
+              <div className="text-sm text-gray-600 mt-1">AWS SES status</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Setup Guide */}
+      {/* AWS Setup Alert */}
       {!isAWSConfigured() && (
-        <div className="alert alert-warning">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">⚠️</span>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            <div className="flex-1">
+              <h3 className="font-medium text-yellow-900">Setup required</h3>
+              <p className="text-sm text-yellow-800 mt-1">
+                Configure your AWS SES credentials to start sending emails
+              </p>
             </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-800">
-                AWS SES Not Configured
-              </h3>
-              <div className="mt-2 text-sm text-yellow-700">
-                <p>
-                  To start sending emails, you need to configure your AWS SES credentials.
-                  Go to Settings to set up your AWS configuration.
-                </p>
-              </div>
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/settings')}
+              className="border-yellow-300 text-yellow-900 hover:bg-yellow-100"
+            >
+              Setup AWS
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
           </div>
         </div>
       )}
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Rocket className="w-5 h-5 text-gray-600" />
+          <h2 className="text-lg font-medium text-gray-900">Quick actions</h2>
+        </div>
+        <div className="space-y-3">
+          {quickActions.map((action) => {
+            const IconComponent = action.icon;
+            return (
+              <button
+                key={action.title}
+                onClick={action.action}
+                className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors text-left border border-gray-200 hover:border-gray-300"
+              >
+                <div className="flex-shrink-0">
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <IconComponent className={`w-4 h-4 ${action.color}`} />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-gray-900">{action.title}</h3>
+                  <p className="text-sm text-gray-600">{action.description}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-gray-400" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <BarChart3 className="w-5 h-5 text-gray-600" />
+          <h2 className="text-lg font-medium text-gray-900">Recent activity</h2>
+        </div>
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">📊</div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
+          <p className="text-gray-600 mb-6">
+            Start by creating a campaign to see your activity here
+          </p>
+          <Button 
+            onClick={() => navigate('/send')}
+            className="bg-black text-white hover:bg-gray-800"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Campaign
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }; 
