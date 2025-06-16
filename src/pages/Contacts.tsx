@@ -3,7 +3,6 @@ import { Contact, ContactFormData } from '../lib/types';
 import { useContacts } from '../hooks/useContacts';
 import { useHistory } from '../hooks/useHistory';
 import { useTemplates } from '../hooks/useTemplates';
-import { useSender } from '../hooks/useSender';
 import { EmailUtils } from '../lib/email-utils';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -12,13 +11,8 @@ import { CSVImportModal } from '../components/contacts/CSVImportModal';
 import { 
   Plus, 
   Search, 
-  Users, 
-  Building, 
-  Mail, 
-  Calendar,
   ChevronDown,
   ChevronRight,
-  Filter,
   Upload
 } from 'lucide-react';
 
@@ -36,7 +30,6 @@ export const Contacts: React.FC = () => {
 
   const { getEmailsForContact } = useHistory();
   const { templates } = useTemplates();
-  const { senderProfiles } = useSender();
 
   const [showForm, setShowForm] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -207,13 +200,10 @@ export const Contacts: React.FC = () => {
 
   const getTemplateName = (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
-    return template?.name || 'Unknown Template';
+    return template ? template.name : 'Unknown Template';
   };
 
-  const getSenderName = (senderProfileId: string) => {
-    const sender = senderProfiles.find(s => s.id === senderProfileId);
-    return sender?.name || 'Unknown Sender';
-  };
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

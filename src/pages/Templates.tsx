@@ -14,8 +14,7 @@ import {
   Trash2, 
   ChevronDown, 
   ChevronRight,
-  Eye,
-  X
+  Eye
 } from 'lucide-react';
 
 export const Templates: React.FC = () => {

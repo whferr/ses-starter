@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const History: React.FC = () => {
-  const { sentEmails, loading, getTotalStats, getRecentEmails } = useHistory();
+  const { getTotalStats, getRecentEmails } = useHistory();
   const { contacts } = useContacts();
   const { templates } = useTemplates();
   const { senderProfiles } = useSender();
@@ -60,13 +60,7 @@ export const History: React.FC = () => {
     return sender?.name || 'Unknown Sender';
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
+
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {

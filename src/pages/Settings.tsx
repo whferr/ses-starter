@@ -5,12 +5,10 @@ import { AWSSettings, SenderProfile } from '../lib/types';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { 
-  Settings as SettingsIcon,
   User,
   Shield,
   CheckCircle,
   XCircle,
-  Plus,
   Edit,
   Trash2,
   Star

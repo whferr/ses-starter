@@ -10,7 +10,6 @@ import { EmailUtils } from '../lib/email-utils';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { 
-  Send as SendIcon, 
   CheckCircle2, 
   AlertTriangle,
   Mail,

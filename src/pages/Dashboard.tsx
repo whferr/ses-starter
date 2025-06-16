@@ -9,7 +9,6 @@ import {
   Users, 
   FileText, 
   Rocket, 
-  Settings as SettingsIcon,
   ArrowRight,
   Plus,
   BarChart3,

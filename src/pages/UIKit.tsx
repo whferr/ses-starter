@@ -9,24 +9,12 @@ import {
   AlertCircle, 
   CheckCircle2, 
   Info, 
-  Search, 
-  Download, 
-  Edit3, 
-  Trash2, 
-  Plus, 
-  Settings, 
-  Bell, 
   User, 
   Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  Calendar,
   Clock,
   MapPin,
   Phone,
   Globe,
-  Star,
   Heart,
   Zap,
   ChevronRight,
@@ -36,8 +24,6 @@ import {
 } from 'lucide-react';
 
 export const UIKit: React.FC = () => {
-  const [showPassword, setShowPassword] = React.useState(false);
-
   return (
     <div className="min-h-screen bg-background p-8 space-y-8">
       <div className="max-w-6xl mx-auto">
