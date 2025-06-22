@@ -89,6 +89,19 @@ class LocalStorage {
     return true;
   }
 
+  async deleteMultipleContacts(ids: string[]): Promise<number> {
+    const contacts = await this.loadContacts();
+    const filteredContacts = contacts.filter(c => !ids.includes(c.id));
+    
+    const deletedCount = contacts.length - filteredContacts.length;
+    
+    if (deletedCount > 0) {
+      await this.saveContacts(filteredContacts);
+    }
+    
+    return deletedCount;
+  }
+
   async createMultipleContacts(contactsData: Omit<Contact, 'id' | 'createdAt'>[]): Promise<Contact[]> {
     const existingContacts = await this.loadContacts();
     const newContacts: Contact[] = [];

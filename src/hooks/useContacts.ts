@@ -61,37 +61,58 @@ export const useContacts = () => {
   }, []);
 
   const deleteContact = useCallback(async (id: string) => {
+    // Store original contacts for potential rollback
+    const originalContacts = contacts;
+    
     try {
-      setLoading(true);
       setError(null);
+      
+      // Optimistic update - update UI immediately
+      setContacts(prev => prev.filter(contact => contact.id !== id));
+      
+      // Then sync with storage in the background
       const success = await storage.deleteContact(id);
-      if (success) {
-        setContacts(prev => prev.filter(contact => contact.id !== id));
-      } else {
+      
+      if (!success) {
+        // Rollback if contact wasn't found
+        setContacts(originalContacts);
         throw new Error('Contact not found');
       }
     } catch (err) {
+      // Rollback UI on failure
+      setContacts(originalContacts);
       setError(err instanceof Error ? err.message : 'Failed to delete contact');
       throw err;
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [contacts]);
 
   const deleteMultipleContacts = useCallback(async (ids: string[]) => {
+    // Store original contacts for potential rollback
+    const originalContacts = contacts;
+    
     try {
-      setLoading(true);
       setError(null);
-      const promises = ids.map(id => storage.deleteContact(id));
-      await Promise.all(promises);
+      
+      // Optimistic update - update UI immediately
       setContacts(prev => prev.filter(contact => !ids.includes(contact.id)));
+      
+      // Then sync with storage in the background
+      const deletedCount = await storage.deleteMultipleContacts(ids);
+      
+      // If no contacts were actually deleted, rollback
+      if (deletedCount === 0) {
+        setContacts(originalContacts);
+        throw new Error('No contacts were found to delete');
+      }
+      
+      return deletedCount;
     } catch (err) {
+      // Rollback UI on failure
+      setContacts(originalContacts);
       setError(err instanceof Error ? err.message : 'Failed to delete contacts');
       throw err;
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [contacts]);
 
   const getContactById = useCallback((id: string) => {
     return contacts.find(contact => contact.id === id);
